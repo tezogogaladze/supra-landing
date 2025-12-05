@@ -94,18 +94,18 @@ function MenuItem({ link, text, image, logo }: MenuItemProps) {
     hideMarquee(x, y, rect.width, rect.height);
   };
 
-  const handleTouchStart = (ev: React.TouchEvent) => {
+  const handleClick = (ev: React.MouseEvent<HTMLAnchorElement>) => {
     if (!itemRef.current) return;
-    const rect = itemRef.current.getBoundingClientRect();
-    const touch = ev.touches[0];
-    const x = touch.clientX - rect.left;
-    const y = touch.clientY - rect.top;
     
+    // On mobile, if marquee not visible, show it and prevent navigation
     if (!isMarqueeVisible) {
-      ev.preventDefault(); // Prevent navigation on first tap
+      ev.preventDefault();
+      const rect = itemRef.current.getBoundingClientRect();
+      const x = rect.width / 2;
+      const y = rect.height / 2;
       showMarquee(x, y, rect.width, rect.height);
     }
-    // On second tap, allow default navigation
+    // If marquee is visible, allow navigation
   };
 
   const repeatedMarqueeContent = Array.from({ length: 12 }).map((_, idx) => (
@@ -122,7 +122,7 @@ function MenuItem({ link, text, image, logo }: MenuItemProps) {
         href={link} 
         onMouseEnter={handleMouseEnter} 
         onMouseLeave={handleMouseLeave}
-        onTouchStart={handleTouchStart}
+        onClick={handleClick}
       >
         {logo ? (
           <img src={logo} alt={text} style={{ width: '190px', height: '60px', objectFit: 'contain' }} />
