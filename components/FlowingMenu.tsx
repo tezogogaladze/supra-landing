@@ -39,6 +39,7 @@ function MenuItem({ link, text, image, logo }: MenuItemProps) {
   const marqueeRef = React.useRef<HTMLDivElement>(null);
   const marqueeInnerRef = React.useRef<HTMLDivElement>(null);
   const [isMarqueeVisible, setIsMarqueeVisible] = React.useState(false);
+  const touchUsedRef = React.useRef(false); // Track if touch event was used
   const animationDefaults = { duration: 0.6, ease: 'expo' };
 
   const findClosestEdge = (mouseX: number, mouseY: number, width: number, height: number) => {
@@ -97,6 +98,9 @@ function MenuItem({ link, text, image, logo }: MenuItemProps) {
   const handleTouchStart = (ev: React.TouchEvent<HTMLAnchorElement>) => {
     if (!itemRef.current) return;
     
+    // Mark that touch was used (to prevent subsequent click event)
+    touchUsedRef.current = true;
+    
     // ALWAYS prevent default on touch to block immediate navigation
     ev.preventDefault();
     
@@ -115,9 +119,16 @@ function MenuItem({ link, text, image, logo }: MenuItemProps) {
   };
 
   const handleClick = (ev: React.MouseEvent<HTMLAnchorElement>) => {
-    // For desktop mouse clicks only
     if (!itemRef.current) return;
     
+    // If touch was used, prevent the synthetic click event that iOS fires
+    if (touchUsedRef.current) {
+      ev.preventDefault();
+      touchUsedRef.current = false; // Reset for next interaction
+      return;
+    }
+    
+    // For desktop mouse clicks only
     if (!isMarqueeVisible) {
       ev.preventDefault();
       const rect = itemRef.current.getBoundingClientRect();
