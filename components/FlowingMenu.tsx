@@ -94,10 +94,24 @@ function MenuItem({ link, text, image, logo }: MenuItemProps) {
     hideMarquee(x, y, rect.width, rect.height);
   };
 
+  const handleTouchStart = (ev: React.TouchEvent<HTMLAnchorElement>) => {
+    if (!itemRef.current) return;
+    
+    const rect = itemRef.current.getBoundingClientRect();
+    const touch = ev.touches[0];
+    const x = touch.clientX - rect.left;
+    const y = touch.clientY - rect.top;
+    
+    if (!isMarqueeVisible) {
+      ev.preventDefault();
+      showMarquee(x, y, rect.width, rect.height);
+    }
+  };
+
   const handleClick = (ev: React.MouseEvent<HTMLAnchorElement>) => {
     if (!itemRef.current) return;
     
-    // On mobile, if marquee not visible, show it and prevent navigation
+    // For desktop/non-touch devices
     if (!isMarqueeVisible) {
       ev.preventDefault();
       const rect = itemRef.current.getBoundingClientRect();
@@ -105,7 +119,6 @@ function MenuItem({ link, text, image, logo }: MenuItemProps) {
       const y = rect.height / 2;
       showMarquee(x, y, rect.width, rect.height);
     }
-    // If marquee is visible, allow navigation
   };
 
   const repeatedMarqueeContent = Array.from({ length: 12 }).map((_, idx) => (
@@ -122,6 +135,7 @@ function MenuItem({ link, text, image, logo }: MenuItemProps) {
         href={link} 
         onMouseEnter={handleMouseEnter} 
         onMouseLeave={handleMouseLeave}
+        onTouchStart={handleTouchStart}
         onClick={handleClick}
       >
         {logo ? (
