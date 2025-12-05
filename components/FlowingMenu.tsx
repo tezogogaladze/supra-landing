@@ -38,6 +38,7 @@ function MenuItem({ link, text, image, logo }: MenuItemProps) {
   const itemRef = React.useRef<HTMLDivElement>(null);
   const marqueeRef = React.useRef<HTMLDivElement>(null);
   const marqueeInnerRef = React.useRef<HTMLDivElement>(null);
+  const [isMarqueeVisible, setIsMarqueeVisible] = React.useState(false);
   const animationDefaults = { duration: 0.6, ease: 'expo' };
 
   const findClosestEdge = (mouseX: number, mouseY: number, width: number, height: number) => {
@@ -52,13 +53,11 @@ function MenuItem({ link, text, image, logo }: MenuItemProps) {
     return xDiff * xDiff + yDiff * yDiff;
   };
 
-  const handleMouseEnter = (ev: React.MouseEvent) => {
+  const showMarquee = (x: number, y: number, width: number, height: number) => {
     if (!itemRef.current || !marqueeRef.current || !marqueeInnerRef.current) return;
 
-    const rect = itemRef.current.getBoundingClientRect();
-    const x = ev.clientX - rect.left;
-    const y = ev.clientY - rect.top;
-    const edge = findClosestEdge(x, y, rect.width, rect.height);
+    const edge = findClosestEdge(x, y, width, height);
+    setIsMarqueeVisible(true);
 
     gsap
       .timeline({ defaults: animationDefaults })
@@ -67,18 +66,46 @@ function MenuItem({ link, text, image, logo }: MenuItemProps) {
       .to([marqueeRef.current, marqueeInnerRef.current], { y: '0%' }, 0);
   };
 
-  const handleMouseLeave = (ev: React.MouseEvent) => {
+  const hideMarquee = (x: number, y: number, width: number, height: number) => {
     if (!itemRef.current || !marqueeRef.current || !marqueeInnerRef.current) return;
 
-    const rect = itemRef.current.getBoundingClientRect();
-    const x = ev.clientX - rect.left;
-    const y = ev.clientY - rect.top;
-    const edge = findClosestEdge(x, y, rect.width, rect.height);
+    const edge = findClosestEdge(x, y, width, height);
+    setIsMarqueeVisible(false);
 
     gsap
       .timeline({ defaults: animationDefaults })
       .to(marqueeRef.current, { y: edge === 'top' ? '-101%' : '101%' }, 0)
       .to(marqueeInnerRef.current, { y: edge === 'top' ? '101%' : '-101%' }, 0);
+  };
+
+  const handleMouseEnter = (ev: React.MouseEvent) => {
+    if (!itemRef.current) return;
+    const rect = itemRef.current.getBoundingClientRect();
+    const x = ev.clientX - rect.left;
+    const y = ev.clientY - rect.top;
+    showMarquee(x, y, rect.width, rect.height);
+  };
+
+  const handleMouseLeave = (ev: React.MouseEvent) => {
+    if (!itemRef.current) return;
+    const rect = itemRef.current.getBoundingClientRect();
+    const x = ev.clientX - rect.left;
+    const y = ev.clientY - rect.top;
+    hideMarquee(x, y, rect.width, rect.height);
+  };
+
+  const handleTouchStart = (ev: React.TouchEvent) => {
+    if (!itemRef.current) return;
+    const rect = itemRef.current.getBoundingClientRect();
+    const touch = ev.touches[0];
+    const x = touch.clientX - rect.left;
+    const y = touch.clientY - rect.top;
+    
+    if (!isMarqueeVisible) {
+      ev.preventDefault(); // Prevent navigation on first tap
+      showMarquee(x, y, rect.width, rect.height);
+    }
+    // On second tap, allow default navigation
   };
 
   const repeatedMarqueeContent = Array.from({ length: 12 }).map((_, idx) => (
@@ -90,7 +117,13 @@ function MenuItem({ link, text, image, logo }: MenuItemProps) {
 
   return (
     <div className="menu__item" ref={itemRef}>
-      <a className="menu__item-link" href={link} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+      <a 
+        className="menu__item-link" 
+        href={link} 
+        onMouseEnter={handleMouseEnter} 
+        onMouseLeave={handleMouseLeave}
+        onTouchStart={handleTouchStart}
+      >
         {logo ? (
           <img src={logo} alt={text} style={{ width: '190px', height: '60px', objectFit: 'contain' }} />
         ) : (
