@@ -21,7 +21,7 @@ export default function Home() {
     }}>
       <div style={{ height: '400px', width: '100%', position: 'relative' }}>
         <FlowingMenu items={demoItems} />
-      </div>
+        </div>
     </div>
   );
 }

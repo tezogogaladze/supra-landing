@@ -2,13 +2,13 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Supra - Your Table is Waiting | Restaurant Reservations in Georgia",
+  title: "სუფრა - გელოდებათ | დაჯავშნე რესტორნები მარტივად და სწრაფად",
   description: "Discover and book the best restaurants in Georgia. Instant reservations, real-time availability, and exclusive deals. Your perfect dining experience starts with Supra.",
   keywords: ["restaurant reservation", "book table", "Georgia restaurants", "dining", "Supra"],
   authors: [{ name: "Supra" }],
   openGraph: {
-    title: "Supra - Your Table is Waiting",
-    description: "Discover and book the best restaurants in Georgia",
+    title: "სუფრა - გელოდებათ",
+    description: "დაჯავშნე რესტორნები მარტივად და სწრაფად",
     url: "https://supra-booking.com",
     siteName: "Supra",
     locale: "en_US",
@@ -16,8 +16,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Supra - Your Table is Waiting",
-    description: "Discover and book the best restaurants in Georgia",
+    title: "სუფრა - გელოდებათ",
+    description: "დაჯავშნე რესტორნები მარტივად და სწრაფად",
   },
 };
 

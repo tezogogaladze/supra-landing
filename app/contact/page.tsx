@@ -12,12 +12,43 @@ export default function ContactPage() {
     phone: '',
     message: ''
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle form submission
-    console.log('Form submitted:', formData);
-    alert('Thank you for your interest! We will contact you soon.');
+    setIsSubmitting(true);
+    setSubmitStatus('idle');
+
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        setSubmitStatus('success');
+        setFormData({
+          restaurantName: '',
+          contactPerson: '',
+          email: '',
+          phone: '',
+          message: ''
+        });
+        alert('Thank you for your interest! We will contact you soon.');
+      } else {
+        setSubmitStatus('error');
+        alert('There was an error sending your message. Please try again or email us directly at support@supra-booking.com');
+      }
+    } catch (error) {
+      setSubmitStatus('error');
+      alert('There was an error sending your message. Please try again or email us directly at support@supra-booking.com');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -244,23 +275,25 @@ export default function ContactPage() {
 
           <button
             type="submit"
+            disabled={isSubmitting}
             style={{
               width: '100%',
               padding: '1rem',
-              background: '#fee1c4',
+              background: isSubmitting ? '#ccc' : '#fee1c4',
               color: '#051011',
               border: 'none',
               borderRadius: '8px',
               fontSize: '1rem',
               fontWeight: '600',
-              cursor: 'pointer',
+              cursor: isSubmitting ? 'not-allowed' : 'pointer',
               fontFamily: "'Satoshi', sans-serif",
-              transition: 'opacity 0.3s'
+              transition: 'opacity 0.3s',
+              opacity: isSubmitting ? 0.6 : 1
             }}
-            onMouseEnter={(e) => e.currentTarget.style.opacity = '0.8'}
-            onMouseLeave={(e) => e.currentTarget.style.opacity = '1'}
+            onMouseEnter={(e) => !isSubmitting && (e.currentTarget.style.opacity = '0.8')}
+            onMouseLeave={(e) => !isSubmitting && (e.currentTarget.style.opacity = '1')}
           >
-            Submit Application
+            {isSubmitting ? 'Sending...' : 'Submit Application'}
           </button>
         </form>
 
