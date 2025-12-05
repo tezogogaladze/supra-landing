@@ -94,30 +94,38 @@ function MenuItem({ link, text, image, logo }: MenuItemProps) {
     hideMarquee(x, y, rect.width, rect.height);
   };
 
-  const handleClick = (ev: React.MouseEvent<HTMLAnchorElement> | React.TouchEvent<HTMLAnchorElement>) => {
+  const handleTouchStart = (ev: React.TouchEvent<HTMLAnchorElement>) => {
+    if (!itemRef.current) return;
+    
+    // ALWAYS prevent default on touch to block immediate navigation
+    ev.preventDefault();
+    
+    const rect = itemRef.current.getBoundingClientRect();
+    const touch = ev.touches[0];
+    const x = touch.clientX - rect.left;
+    const y = touch.clientY - rect.top;
+    
+    if (!isMarqueeVisible) {
+      // First tap: show marquee
+      showMarquee(x, y, rect.width, rect.height);
+    } else {
+      // Second tap: navigate programmatically
+      window.location.href = link;
+    }
+  };
+
+  const handleClick = (ev: React.MouseEvent<HTMLAnchorElement>) => {
+    // For desktop mouse clicks only
     if (!itemRef.current) return;
     
     if (!isMarqueeVisible) {
       ev.preventDefault();
-      ev.stopPropagation();
-      
       const rect = itemRef.current.getBoundingClientRect();
-      let x, y;
-      
-      if ('touches' in ev) {
-        // Touch event
-        const touch = ev.touches[0] || ev.changedTouches[0];
-        x = touch.clientX - rect.left;
-        y = touch.clientY - rect.top;
-      } else {
-        // Mouse event - use center
-        x = rect.width / 2;
-        y = rect.height / 2;
-      }
-      
+      const x = rect.width / 2;
+      const y = rect.height / 2;
       showMarquee(x, y, rect.width, rect.height);
     }
-    // If marquee is visible, allow navigation (don't preventDefault)
+    // If marquee is visible, allow default link navigation
   };
 
   const repeatedMarqueeContent = Array.from({ length: 12 }).map((_, idx) => (
@@ -135,7 +143,7 @@ function MenuItem({ link, text, image, logo }: MenuItemProps) {
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
         onClick={handleClick}
-        onTouchStart={handleClick}
+        onTouchStart={handleTouchStart}
       >
         {logo ? (
           <img src={logo} alt={text} style={{ width: '190px', height: '60px', objectFit: 'contain' }} />
