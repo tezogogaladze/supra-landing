@@ -6,6 +6,14 @@ export const metadata: Metadata = {
   description: "Discover and book the best restaurants in Georgia. Instant reservations, real-time availability, and exclusive deals. Your perfect dining experience starts with Supra.",
   keywords: ["restaurant reservation", "book table", "Georgia restaurants", "dining", "Supra"],
   authors: [{ name: "Supra" }],
+  icons: {
+    icon: [
+      { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
+      { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
+    ],
+    apple: '/apple-touch-icon.png',
+  },
+  manifest: '/site.webmanifest',
   openGraph: {
     title: "სუფრა - გელოდებათ",
     description: "დაჯავშნე რესტორნები მარტივად და სწრაფად",
