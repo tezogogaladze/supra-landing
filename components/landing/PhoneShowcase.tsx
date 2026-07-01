@@ -8,6 +8,8 @@ export default function PhoneShowcase() {
             <video
               className="landing-phone-video"
               src="/hero-video.mp4"
+              width={1206}
+              height={2622}
               autoPlay
               muted
               loop
