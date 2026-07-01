@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "სუფრა - გელოდებათ | დაჯავშნე რესტორნები მარტივად და სწრაფად",
-  description: "Discover and book the best restaurants in Georgia. Instant reservations, real-time availability, and exclusive deals. Your perfect dining experience starts with Supra.",
+  title: "Supra — Discover and Book Restaurants",
+  description: "Discover and book the best restaurants in Georgia. Instant reservations, real-time availability, and exclusive deals.",
   keywords: ["restaurant reservation", "book table", "Georgia restaurants", "dining", "Supra"],
   authors: [{ name: "Supra" }],
   icons: {
@@ -15,8 +15,8 @@ export const metadata: Metadata = {
   },
   manifest: '/site.webmanifest',
   openGraph: {
-    title: "სუფრა - გელოდებათ",
-    description: "დაჯავშნე რესტორნები მარტივად და სწრაფად",
+    title: "Supra — Discover and Book Restaurants",
+    description: "Discover and book the best restaurants in Georgia. Instant reservations, real-time availability, and exclusive deals.",
     url: "https://supra-booking.com",
     siteName: "Supra",
     locale: "en_US",
@@ -24,8 +24,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "სუფრა - გელოდებათ",
-    description: "დაჯავშნე რესტორნები მარტივად და სწრაფად",
+    title: "Supra — Discover and Book Restaurants",
+    description: "Discover and book the best restaurants in Georgia. Instant reservations, real-time availability, and exclusive deals.",
   },
 };
 
@@ -37,10 +37,16 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;500;600;700&display=swap"
+          rel="stylesheet"
+        />
         <link rel="preconnect" href="https://api.fontshare.com" />
         <link href="https://api.fontshare.com/v2/css?f[]=satoshi@700,500,400&display=swap" rel="stylesheet" />
       </head>
-      <body className="antialiased" style={{ fontFamily: "'Satoshi', -apple-system, BlinkMacSystemFont, sans-serif" }}>
+      <body className="antialiased">
         {children}
       </body>
     </html>
