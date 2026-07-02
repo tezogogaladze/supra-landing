@@ -283,23 +283,45 @@ html:has(.landing-page) body {
 .landing-store-badges {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.85rem;
-  align-items: center;
+  gap: 1rem 1.15rem;
+  align-items: flex-start;
   margin-bottom: 1.75rem;
 }
 
-.landing-store-badges a {
+.landing-store-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: not-allowed;
+  user-select: none;
+}
+
+.landing-store-badge-visual {
+  position: relative;
+  border-radius: 0.65rem;
+  overflow: hidden;
+  opacity: 0.72;
+  filter: grayscale(0.35);
+}
+
+.landing-store-badge-visual img {
   display: block;
-  transition: opacity 0.2s;
-}
-
-.landing-store-badges a:hover {
-  opacity: 0.8;
-}
-
-.landing-store-badges img {
   height: 3.1rem;
   width: auto;
+}
+
+.landing-store-badge-soon {
+  padding: 0.32rem 0.75rem;
+  background: var(--color-accent);
+  color: #ffffff;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: lowercase;
+  line-height: 1;
+  white-space: nowrap;
 }
 
 .landing-hero-tagline {
@@ -608,8 +630,12 @@ html:has(.landing-page) body {
     margin-bottom: 1.5rem;
   }
 
-  .landing-store-badges img {
-    height: 3.25rem;
+  .landing-store-badge-visual img {
+    height: 3.35rem;
+  }
+
+  .landing-store-badge-soon {
+    font-size: 0.8rem;
   }
 
   .landing-hero-tagline {

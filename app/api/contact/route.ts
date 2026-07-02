@@ -1,59 +1,84 @@
-import { Resend } from 'resend';
 import { NextRequest, NextResponse } from 'next/server';
+
+const WEB3FORMS_URL = 'https://api.web3forms.com/submit';
+const MAX_FIELD_LENGTH = 500;
+const MAX_MESSAGE_LENGTH = 2000;
+
+type ContactPayload = {
+  restaurantName?: string;
+  contactPerson?: string;
+  email?: string;
+  phone?: string;
+  message?: string;
+  botcheck?: boolean | string;
+};
+
+function trimField(value: unknown, maxLength: number): string {
+  if (typeof value !== 'string') return '';
+  return value.trim().slice(0, maxLength);
+}
+
+function isValidEmail(email: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
-    const { restaurantName, contactPerson, email, phone, message } = body;
+    const body = (await request.json()) as ContactPayload;
 
-    // Validate required fields
+    if (body.botcheck) {
+      return NextResponse.json({ message: 'Submission received' }, { status: 200 });
+    }
+
+    const restaurantName = trimField(body.restaurantName, MAX_FIELD_LENGTH);
+    const contactPerson = trimField(body.contactPerson, MAX_FIELD_LENGTH);
+    const email = trimField(body.email, MAX_FIELD_LENGTH);
+    const phone = trimField(body.phone, MAX_FIELD_LENGTH);
+    const message = trimField(body.message, MAX_MESSAGE_LENGTH);
+
     if (!restaurantName || !contactPerson || !email || !phone) {
-      return NextResponse.json(
-        { error: 'Missing required fields' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
-    // Check if API key is configured
-    if (!process.env.RESEND_API_KEY) {
-      console.error('RESEND_API_KEY is not configured');
-      return NextResponse.json(
-        { error: 'Email service not configured' },
-        { status: 500 }
-      );
+    if (!isValidEmail(email)) {
+      return NextResponse.json({ error: 'Invalid email address' }, { status: 400 });
     }
 
-    // Initialize Resend with API key
-    const resend = new Resend(process.env.RESEND_API_KEY);
+    const accessKey = process.env.WEB3FORMS_ACCESS_KEY;
+    if (!accessKey) {
+      console.error('WEB3FORMS_ACCESS_KEY is not configured');
+      return NextResponse.json({ error: 'Contact form is not configured' }, { status: 500 });
+    }
 
-    // Send email using Resend
-    const data = await resend.emails.send({
-      from: 'Supra Contact Form <noreply@supra-booking.com>',
-      to: ['support@supra-booking.com'],
-      replyTo: email,
-      subject: `New Restaurant Application: ${restaurantName}`,
-      html: `
-        <h2>New Restaurant Application</h2>
-        <p><strong>Restaurant Name:</strong> ${restaurantName}</p>
-        <p><strong>Contact Person:</strong> ${contactPerson}</p>
-        <p><strong>Email:</strong> ${email}</p>
-        <p><strong>Phone:</strong> ${phone}</p>
-        ${message ? `<p><strong>Message:</strong></p><p>${message}</p>` : ''}
-        <hr>
-        <p style="color: #666; font-size: 12px;">Sent from Supra Landing Page Contact Form</p>
-      `,
+    const response = await fetch(WEB3FORMS_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+      body: JSON.stringify({
+        access_key: accessKey,
+        subject: `New Restaurant Application: ${restaurantName}`,
+        from_name: contactPerson,
+        name: contactPerson,
+        email,
+        phone,
+        restaurant_name: restaurantName,
+        message: message || 'No message provided.',
+        replyto: email,
+      }),
     });
 
-    return NextResponse.json(
-      { message: 'Email sent successfully', data },
-      { status: 200 }
-    );
+    const data = (await response.json()) as { success?: boolean; message?: string };
+
+    if (!response.ok || !data.success) {
+      console.error('Web3Forms error:', data);
+      return NextResponse.json({ error: 'Failed to send message' }, { status: 502 });
+    }
+
+    return NextResponse.json({ message: 'Submission received' }, { status: 200 });
   } catch (error) {
-    console.error('Error sending email:', error);
-    return NextResponse.json(
-      { error: 'Failed to send email' },
-      { status: 500 }
-    );
+    console.error('Contact form error:', error);
+    return NextResponse.json({ error: 'Failed to send message' }, { status: 500 });
   }
 }
-

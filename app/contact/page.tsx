@@ -7,19 +7,28 @@ import ContactHeader from '@/components/contact/ContactHeader';
 import '@/components/landing/landing.css';
 import '@/components/contact/contact.css';
 
-export default function ContactPage() {
-  const [formData, setFormData] = useState({
-    restaurantName: '',
-    contactPerson: '',
-    email: '',
-    phone: '',
-    message: '',
-  });
-  const [isSubmitting, setIsSubmitting] = useState(false);
+type FormStatus = 'idle' | 'success' | 'error';
 
-  const handleSubmit = async (e: React.FormEvent) => {
+const emptyForm = {
+  restaurantName: '',
+  contactPerson: '',
+  email: '',
+  phone: '',
+  message: '',
+};
+
+export default function ContactPage() {
+  const [formData, setFormData] = useState(emptyForm);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [status, setStatus] = useState<FormStatus>('idle');
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setStatus('idle');
+
+    const form = e.currentTarget;
+    const botcheck = (form.elements.namedItem('botcheck') as HTMLInputElement)?.checked ?? false;
 
     try {
       const response = await fetch('/api/contact', {
@@ -27,33 +36,25 @@ export default function ContactPage() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({ ...formData, botcheck }),
       });
 
       if (response.ok) {
-        setFormData({
-          restaurantName: '',
-          contactPerson: '',
-          email: '',
-          phone: '',
-          message: '',
-        });
-        alert('Thank you for your interest! We will contact you soon.');
+        setFormData(emptyForm);
+        form.reset();
+        setStatus('success');
       } else {
-        alert(
-          'There was an error sending your message. Please try again or email us directly at support@supra-booking.com',
-        );
+        setStatus('error');
       }
     } catch {
-      alert(
-        'There was an error sending your message. Please try again or email us directly at support@supra-booking.com',
-      );
+      setStatus('error');
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setStatus('idle');
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
@@ -68,6 +69,15 @@ export default function ContactPage() {
         <main className="contact-main">
           <div className="contact-layout">
             <form className="contact-form" onSubmit={handleSubmit}>
+              <input
+                type="checkbox"
+                name="botcheck"
+                className="contact-honeypot"
+                tabIndex={-1}
+                autoComplete="off"
+                aria-hidden="true"
+              />
+
               <div className="contact-form-grid">
                 <div className="contact-field">
                   <label htmlFor="restaurantName" className="contact-label">
@@ -143,6 +153,19 @@ export default function ContactPage() {
                     placeholder="Tell us about your restaurant..."
                   />
                 </div>
+
+                {status === 'success' && (
+                  <p className="contact-status contact-status--success contact-field--full" role="status">
+                    Thank you for your interest! We will contact you soon.
+                  </p>
+                )}
+
+                {status === 'error' && (
+                  <p className="contact-status contact-status--error contact-field--full" role="alert">
+                    Something went wrong. Please try again or email{' '}
+                    <a href="mailto:support@supra-booking.com">support@supra-booking.com</a>.
+                  </p>
+                )}
 
                 <div className="contact-field contact-field--full">
                   <button type="submit" className="contact-submit" disabled={isSubmitting}>

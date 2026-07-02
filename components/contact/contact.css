@@ -181,6 +181,39 @@ html:has(.contact-page) body {
   cursor: not-allowed;
 }
 
+.contact-honeypot {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.contact-status {
+  margin: 0;
+  padding: 0.75rem 1rem;
+  border-radius: 0.65rem;
+  font-size: 0.92rem;
+  line-height: 1.4;
+}
+
+.contact-status--success {
+  background: rgba(199, 98, 75, 0.12);
+  color: var(--color-text);
+}
+
+.contact-status--error {
+  background: rgba(5, 16, 17, 0.06);
+  color: var(--color-text);
+}
+
+.contact-status a {
+  color: var(--color-accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
 @media screen and (max-width: 767px) {
   html:has(.contact-page),
   html:has(.contact-page) body {
