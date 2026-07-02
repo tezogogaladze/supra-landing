@@ -226,9 +226,9 @@ html:has(.landing-page) body {
   width: auto;
   aspect-ratio: 1359 / 2736;
   /* Tune video fit once — same geometry on every breakpoint */
-  --phone-screen-inset-y: 2%;
+  --phone-screen-inset-y: 3%;
   --phone-screen-inset-x: 5.5%;
-  --phone-screen-radius: 15%;
+  --phone-screen-radius: 12%;
   --phone-video-scale: 0.96;
 }
 
