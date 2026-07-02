@@ -225,6 +225,10 @@ html:has(.landing-page) body {
   max-height: 78%;
   width: auto;
   aspect-ratio: 1359 / 2736;
+  --phone-frame-w: 1359;
+  --phone-frame-h: 2736;
+  --phone-video-w: 1206;
+  --phone-video-h: 2622;
   --phone-video-scale: 0.9801305;
 }
 
@@ -251,16 +255,22 @@ html:has(.landing-page) body {
 }
 
 .landing-phone-screen {
-  /* Clip video to the frame PNG screen cutout (frame 1359×2736, video 1206×2622) */
+  /* Clip video to frame cutout; scale via box size (not transform — iOS Safari ignores video transforms) */
+  --screen-w: calc(100% * var(--phone-video-w) / var(--phone-frame-w));
+  --screen-h: calc(100% * var(--phone-video-h) / var(--phone-frame-h));
+  --screen-top: calc(100% * (var(--phone-frame-h) - var(--phone-video-h)) / 2 / var(--phone-frame-h));
+  --screen-left: calc(100% * (var(--phone-frame-w) - var(--phone-video-w)) / 2 / var(--phone-frame-w));
   position: absolute;
-  top: calc(100% * 57 / 2736);
-  left: calc(100% * 76.5 / 1359);
-  width: calc(100% * 1206 / 1359);
-  height: calc(100% * 2622 / 2736);
+  top: calc(var(--screen-top) + var(--screen-h) * (1 - var(--phone-video-scale)) / 2);
+  left: calc(var(--screen-left) + var(--screen-w) * (1 - var(--phone-video-scale)) / 2);
+  width: calc(var(--screen-w) * var(--phone-video-scale));
+  height: calc(var(--screen-h) * var(--phone-video-scale));
   border-radius: 11.5%;
   overflow: hidden;
   z-index: 1;
   background: #000;
+  isolation: isolate;
+  transform: translate3d(0, 0, 0);
 }
 
 .landing-phone-video {
@@ -268,8 +278,6 @@ html:has(.landing-page) body {
   height: 100%;
   object-fit: fill;
   display: block;
-  transform: scale(var(--phone-video-scale));
-  transform-origin: center center;
 }
 
 .landing-phone-frame-img {
