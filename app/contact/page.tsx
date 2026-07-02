@@ -9,6 +9,9 @@ import '@/components/contact/contact.css';
 
 type FormStatus = 'idle' | 'success' | 'error';
 
+const WEB3FORMS_URL = 'https://api.web3forms.com/submit';
+const accessKey = process.env.NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY;
+
 const emptyForm = {
   restaurantName: '',
   contactPerson: '',
@@ -30,16 +33,49 @@ export default function ContactPage() {
     const form = e.currentTarget;
     const botcheck = (form.elements.namedItem('botcheck') as HTMLInputElement)?.checked ?? false;
 
+    if (botcheck) {
+      setFormData(emptyForm);
+      form.reset();
+      setStatus('success');
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (!accessKey) {
+      setStatus('error');
+      setIsSubmitting(false);
+      return;
+    }
+
     try {
-      const response = await fetch('/api/contact', {
+      const response = await fetch(WEB3FORMS_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          Accept: 'application/json',
         },
-        body: JSON.stringify({ ...formData, botcheck }),
+        body: JSON.stringify({
+          access_key: accessKey,
+          subject: `New Restaurant Application: ${formData.restaurantName.trim()}`,
+          name: formData.contactPerson.trim(),
+          email: formData.email.trim(),
+          phone: formData.phone.trim(),
+          restaurant_name: formData.restaurantName.trim(),
+          message: formData.message.trim() || 'No message provided.',
+          replyto: formData.email.trim(),
+          botcheck,
+        }),
       });
 
-      if (response.ok) {
+      const contentType = response.headers.get('content-type') ?? '';
+      if (!contentType.includes('application/json')) {
+        setStatus('error');
+        return;
+      }
+
+      const data = (await response.json()) as { success?: boolean };
+
+      if (response.ok && data.success) {
         setFormData(emptyForm);
         form.reset();
         setStatus('success');
