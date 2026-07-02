@@ -2,7 +2,6 @@ html:has(.landing-page),
 html:has(.landing-page) body {
   overflow: hidden;
   height: 100%;
-  background: #fef6ee;
   font-size: clamp(10px, min(1vw, 1.75dvh), 19.2px);
 }
 
@@ -491,7 +490,6 @@ html:has(.landing-page) body {
   html:has(.landing-page) body {
     overflow: auto;
     height: auto;
-    background: #fef6ee;
   }
 
   html:has(.landing-page) {

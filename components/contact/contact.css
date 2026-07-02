@@ -2,7 +2,6 @@ html:has(.contact-page),
 html:has(.contact-page) body {
   overflow: hidden;
   height: 100%;
-  background: #fef6ee;
   font-size: clamp(10px, min(1vw, 1.75dvh), 19.2px);
 }
 
