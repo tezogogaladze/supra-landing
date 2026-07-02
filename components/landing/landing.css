@@ -265,7 +265,7 @@ html:has(.landing-page) body {
   left: calc(var(--screen-left) + var(--screen-w) * (1 - var(--phone-video-scale)) / 2);
   width: calc(var(--screen-w) * var(--phone-video-scale));
   height: calc(var(--screen-h) * var(--phone-video-scale));
-  border-radius: 11.5%;
+  border-radius: 8%;
   overflow: hidden;
   z-index: 1;
   background: #000;
