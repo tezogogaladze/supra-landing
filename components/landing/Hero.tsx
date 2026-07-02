@@ -10,7 +10,7 @@ const features = [
   'curated restaurant selection',
 ];
 
-export default function Hero() {
+export default function Hero({ mediaReady = false }: { mediaReady?: boolean }) {
   return (
     <section className="landing-hero">
       <div className="landing-container landing-hero-inner">
@@ -35,7 +35,7 @@ export default function Hero() {
             restaurants and food lovers creating here.
           </p>
         </div>
-        <PhoneShowcase />
+        <PhoneShowcase mediaReady={mediaReady} />
       </div>
     </section>
   );

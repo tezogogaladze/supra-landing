@@ -1,4 +1,19 @@
-export default function PhoneShowcase() {
+'use client';
+
+import { useEffect, useRef } from 'react';
+
+type PhoneShowcaseProps = {
+  mediaReady?: boolean;
+};
+
+export default function PhoneShowcase({ mediaReady = false }: PhoneShowcaseProps) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    if (!mediaReady || !videoRef.current) return;
+    void videoRef.current.play().catch(() => {});
+  }, [mediaReady]);
+
   return (
     <div className="landing-phone-block">
       <div className="landing-phone-wrap">
@@ -6,11 +21,11 @@ export default function PhoneShowcase() {
         <div className="landing-phone-device">
           <div className="landing-phone-screen">
             <video
+              ref={videoRef}
               className="landing-phone-video"
               src="/hero-video.mp4"
               width={1206}
               height={2622}
-              autoPlay
               muted
               loop
               playsInline
